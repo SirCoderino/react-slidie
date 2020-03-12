@@ -57,6 +57,12 @@ export const _ = {
       element.removeEventListener(event, callback, opt);
     else if (element.detachEvent) element.detachEvent("on" + event, callback);
     else delete element["on" + event];
+  },
+  getCssValue: (element, property) => {
+    return element.style[property];
+  },
+  setCssValue: (element, property, value) => {
+    element.style[property] = value;
   }
 };
 export const isSSR = () => typeof window === "undefined";

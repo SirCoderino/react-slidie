@@ -4,6 +4,14 @@
 .snt-carousel {
   position: relative;
   width: 100%;
+
+  &#{&}--rtl {
+    direction: rtl;
+  }
+
+  &#{&}--ltr {
+    direction: ltr;
+  }
 }
 
 .snt-carousel__wrapper {

@@ -15,7 +15,7 @@ import "../../static/scss/index.scss";
 
 const CarouselContext = React.createContext({});
 
-const Carousel = ({ children, ...props }) => {
+const Carousel = ({ children, flow, fullViewItems, ...props }) => {
   const { width: parentWidth } = props;
   const ctx = useContext(CarouselContext);
 
@@ -27,6 +27,7 @@ const Carousel = ({ children, ...props }) => {
   const [dx, setDx] = useState(0);
 
   const [isMounted, setMounted] = useState(false);
+  const [areItemsRendered, setItemsRendered] = useState(false);
   const [boundry, setBoundry] = useState({ minDx: 0, maxDx: 0 });
   const [arrowVisibility, setArrowVisibility] = useState({
     left: true,
@@ -57,17 +58,72 @@ const Carousel = ({ children, ...props }) => {
     itemsRef.current[index] = node;
   }, []);
 
+  const itemCalcs = useCallback(() => {
+    let maximumWidth = 0;
+
+    itemsRef.current.forEach(item => {
+      maximumWidth += item.getBoundingClientRect().width;
+    });
+
+    setBoundry(b => ({
+      ...b,
+      maxDx: Math.abs(
+        parentRef.current.getBoundingClientRect().width - maximumWidth
+      )
+    }));
+  }, []);
+
   const dragStarts = useCallback(e => {}, []);
   const dragEnds = useCallback(() => {}, []);
   const dragging = useCallback(e => {}, []);
 
-  const goForward = useCallback(() => {}, []);
-  const goBackward = useCallback(() => {}, []);
+  const goForward = useCallback(() => {
+    let newDx = 0;
+    const step = fullViewItems ? parentWidth : 80;
+    const sign = flow === "rtl" ? 1 : -1;
+
+    newDx = _.constrain(
+      dx + sign * step,
+      Math.min(boundry.minDx, sign * boundry.maxDx),
+      Math.max(boundry.minDx, sign * boundry.maxDx)
+    );
+
+    _.setCssValue(
+      frameRef.current,
+      "transform",
+      `translate3d(${newDx}px, 0, 0)`
+    );
+
+    setDragState(s => ({ ...s, currentX: newDx, offsetX: newDx }));
+    setDx(newDx);
+  }, [dx, boundry, flow, fullViewItems, parentWidth]);
+
+  const goBackward = useCallback(() => {
+    let newDx = 0;
+    const step = fullViewItems ? parentWidth : 80;
+    const sign = flow === "rtl" ? 1 : -1;
+
+    newDx = _.constrain(
+      dx - sign * step,
+      Math.min(boundry.minDx, sign * boundry.maxDx),
+      Math.max(boundry.minDx, sign * boundry.maxDx)
+    );
+
+    _.setCssValue(
+      frameRef.current,
+      "transform",
+      `translate3d(${newDx}px, 0, 0)`
+    );
+
+    setDragState(s => ({ ...s, currentX: newDx, offsetX: newDx }));
+    setDx(newDx);
+  }, [dx, boundry, flow, fullViewItems, parentWidth]);
 
   const goTo = useCallback(index => {}, []);
 
-  const renderItems = useCallback(() => {
-    return React.Children.map(children, (child, index) => {
+  // creates the new items when children (CarouselItem) changes
+  const createItems = useCallback(() => {
+    const createdItems = React.Children.map(children, (child, index) => {
       if (child.type.displayName === "CarouselItem") {
         const curProps = child.props;
         const newProps = {
@@ -78,9 +134,24 @@ const Carousel = ({ children, ...props }) => {
         return React.cloneElement(child, { ...curProps, ...newProps });
       }
     });
+
+    setItemsRendered(false);
+    return createdItems;
   }, [children, setItemRef]);
 
-  const items = useMemo(() => renderItems(), [renderItems]);
+  // memoizes the created items
+  const items = useMemo(() => createItems(), [createItems]);
+
+  // renders the memoized items
+  // this function will be called on each render
+  const renderItems = useCallback(() => {
+    if (!areItemsRendered) setItemsRendered(true);
+    return items;
+  }, [items, areItemsRendered]);
+
+  useEffect(() => {
+    if (isCalcsAllowed && areItemsRendered) itemCalcs();
+  }, [isCalcsAllowed, areItemsRendered, itemCalcs]);
 
   // attaching events using custom hook (useEventListener)
   // when the EventCurrentTarget or the EventListener changes this hook will
@@ -125,26 +196,29 @@ const Carousel = ({ children, ...props }) => {
 
   return (
     <CarouselContext.Provider value={{}}>
-      <div ref={parentRef} className="snt-carousel">
+      <div
+        ref={parentRef}
+        className={`snt-carousel${flow ? ` snt-carousel--${flow}` : ""}`}
+      >
         <div className="snt-carousel__wrapper">
           <div
             className={`snt-carousel__arrow-container snt-carousel__arrow-container--right${
               !arrowVisibility.right ? " hide" : ""
             }`}
-            onClick={goBackward}
+            onClick={flow === "ltr" ? goForward : goBackward}
           >
             <span className="snt-carousel__right-arrow sonnat-icon sonnat-icon-arrow-right-o"></span>
           </div>
           <div className="snt-carousel__container">
             <div className="snt-carousel__frame" ref={frameRef}>
-              {items}
+              {renderItems()}
             </div>
           </div>
           <div
             className={`snt-carousel__arrow-container snt-carousel__arrow-container--left${
               !arrowVisibility.left ? " hide" : ""
             }`}
-            onClick={goForward}
+            onClick={flow === "ltr" ? goBackward : goForward}
           >
             <span className="snt-carousel__left-arrow sonnat-icon sonnat-icon-arrow-left-o"></span>
           </div>
@@ -154,15 +228,21 @@ const Carousel = ({ children, ...props }) => {
   );
 };
 
+Carousel.defaultProps = {
+  flow: "ltr",
+  fullViewItems: true
+};
+
 Carousel.propTypes = {
-  width: PropTypes.number
+  fullViewItems: PropTypes.bool,
+  width: PropTypes.number,
+  flow: PropTypes.oneOf(["ltr", "rtl"])
 };
 
 export default React.memo(
   withResizeDetector(Carousel, {
     handleWidth: true,
     handleHeight: false,
-    skipOnMount: true,
     refreshMode: "debounce",
     refreshRate: 250
   })
