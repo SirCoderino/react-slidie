@@ -1,3 +1,4 @@
-import MainComponent from "./components/MainComponent";
+import Carousel from "./components/Carousel";
+import Item from "./components/Item";
 
-export { MainComponent as default };
+export { Carousel as default, Item };
