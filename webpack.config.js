@@ -141,56 +141,66 @@ module.exports = {
         ],
         include: path.resolve("src")
       },
-
-      // Process application JS with Babel.
       {
-        test: /\.(js|mjs|jsx|ts|tsx)$/,
-        loader: require.resolve("babel-loader"),
-        exclude: /node_modules/,
-        options: {
-          cacheDirectory: true,
-          cacheCompression: isProduction,
-          compact: isProduction
-        }
-      },
-      {
-        test: cssRegex,
-        exclude: cssModuleRegex,
-        use: getStyleLoaders({
-          importLoaders: 1,
-          sourceMap: isProduction
-        }),
-        sideEffects: true
-      },
-      {
-        test: cssModuleRegex,
-        use: getStyleLoaders({
-          importLoaders: 1,
-          sourceMap: isProduction,
-          modules: true
-        })
-      },
-      {
-        test: sassRegex,
-        exclude: sassModuleRegex,
-        use: getStyleLoaders(
+        oneOf: [
+          // Process application JS with Babel.
           {
-            importLoaders: 2,
-            sourceMap: isProduction
+            test: /\.(js|mjs|jsx|ts|tsx)$/,
+            loader: require.resolve("babel-loader"),
+            exclude: /node_modules/,
+            options: {
+              cacheDirectory: true,
+              cacheCompression: isProduction,
+              compact: isProduction
+            }
           },
-          "sass-loader"
-        )
-      },
-      {
-        test: sassModuleRegex,
-        use: getStyleLoaders(
           {
-            importLoaders: 2,
-            sourceMap: isProduction,
-            modules: true
+            test: cssRegex,
+            exclude: cssModuleRegex,
+            use: getStyleLoaders({
+              importLoaders: 1,
+              sourceMap: isProduction
+            }),
+            sideEffects: true
           },
-          "sass-loader"
-        )
+          {
+            test: cssModuleRegex,
+            use: getStyleLoaders({
+              importLoaders: 1,
+              sourceMap: isProduction,
+              modules: true
+            })
+          },
+          {
+            test: sassRegex,
+            exclude: sassModuleRegex,
+            use: getStyleLoaders(
+              {
+                importLoaders: 2,
+                sourceMap: isProduction
+              },
+              "sass-loader"
+            )
+          },
+          {
+            test: sassModuleRegex,
+            use: getStyleLoaders(
+              {
+                importLoaders: 2,
+                sourceMap: isProduction,
+                modules: true
+              },
+              "sass-loader"
+            )
+          },
+          {
+            loader: require.resolve("file-loader"),
+            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+            options: {
+              name: "static/media/[name].[ext]"
+            }
+          }
+        ]
       }
     ]
   },
