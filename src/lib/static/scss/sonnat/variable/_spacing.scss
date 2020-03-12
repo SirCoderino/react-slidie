@@ -1,0 +1,23 @@
+$gutter: 1rem !default;
+$space: $gutter !default;
+$spaces: (
+  x0: $space * 0,
+  x1: $space * 0.125,
+  x2: $space * 0.25,
+  x3: $space * 0.375,
+  x4: $space * 0.5,
+  x5: $space * 0.625,
+  x6: $space * 0.75,
+  x7: $space * 0.875,
+  x8: $space * 1,
+  x9: $space * 1.125,
+  x10: $space * 1.25,
+  x12: $space * 1.5,
+  x16: $space * 2,
+  x18: $space * 2.25,
+  x20: $space * 2.5,
+  x22: $space * 2.75,
+  x24: $space * 3,
+  x32: $space * 4,
+  x64: $space * 8
+) !default;

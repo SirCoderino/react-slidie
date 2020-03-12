@@ -1,0 +1,100 @@
+// Sonnat Design System
+@import "sonnat/sonnat.scss";
+
+.snt-carousel {
+  position: relative;
+  width: 100%;
+}
+
+.snt-carousel__wrapper {
+  width: 100%;
+  display: flex;
+  position: relative;
+  align-items: center;
+}
+
+.snt-carousel__arrow-container {
+  width: 2rem;
+  height: 3rem;
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  & > .sonnat-icon {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 160ms ease, transform 360ms ease;
+  }
+
+  &.hide {
+    cursor: default;
+
+    & > .sonnat-icon {
+      opacity: 0;
+    }
+  }
+
+  &#{&}--right {
+    right: 0;
+    background: linear-gradient(to left, $white 64%, whiteColor(0));
+
+    &.hide {
+      & > .sonnat-icon {
+        transform: translateX(100%);
+      }
+    }
+  }
+
+  &#{&}--left {
+    left: 0;
+    background: linear-gradient(to right, $white 64%, whiteColor(0));
+
+    &.hide {
+      & > .sonnat-icon {
+        transform: translateX(-100%);
+      }
+    }
+  }
+}
+
+.snt-carousel__right-arrow,
+.snt-carousel__left-arrow {
+  @include icon(16);
+
+  color: $brand-primary-color;
+}
+
+.snt-carousel__container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.snt-carousel__frame {
+  display: flex;
+  align-items: center;
+  transition: transform 360ms ease;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.snt-carousel__spacer {
+  width: 2rem;
+  flex-shrink: 0;
+}
+
+.snt-carousel__item {
+  position: relative;
+  flex-grow: 0;
+  flex-shrink: 0;
+}

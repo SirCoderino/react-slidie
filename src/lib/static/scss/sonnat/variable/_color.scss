@@ -1,0 +1,48 @@
+$brand-primary-color: hsla(360, 63%, 40%, 1) !default;
+$brand-secondary-color: brandColor(0.56) !default;
+$brand-hint-color: brandColor(0.32) !default;
+$brand-divider-color: brandColor(0.12) !default;
+$brand-hover-color: adjust-color(
+  $brand-primary-color,
+  $saturation: -8%,
+  $lightness: +8%
+) !default;
+$brand-press-color: adjust-color(
+  $brand-primary-color,
+  $saturation: +8%,
+  $lightness: -4%
+) !default;
+
+$error-primary-color: hsla(360, 100%, 50%, 1) !default;
+$success-primary-color: hsla(123, 46.2%, 33.5%, 1) !default;
+$success-secondary-color: hsla(89, 46%, 48%, 1) !default;
+$warning-primary-color: hsla(21, 100%, 45%, 1) !default;
+$warning-secondary-color: hsla(43, 96%, 58%, 1) !default;
+$message-primary-color: hsla(200, 100%, 97%, 1) !default;
+$message-secondary-color: change-color(
+  $message-primary-color,
+  $alpha: 0.32
+) !default;
+
+$black: hsla(0, 0%, 0%, 1) !default;
+$black-tooltip: adjust-color($black, $lightness: +16%);
+$black-hover: adjust-color(blackColor(0.56), $lightness: +12%) !default;
+$black-primary: blackColor(0.87) !default;
+$black-secondary: blackColor(0.56) !default;
+$black-press: blackColor(0.6) !default;
+$black-hint: blackColor(0.32) !default;
+$black-divider: blackColor(0.12) !default;
+
+$white: hsla(0, 0%, 100%, 1) !default;
+$white-secondary: whiteColor(0.7) !default;
+$white-hint: whiteColor(0.5) !default;
+$white-primary: $white !default;
+$white-divider: whiteColor(0.12) !default;
+
+$gray-900: adjust-color(#000, $lightness: +13%) !default;
+$gray-850: adjust-color(#000, $lightness: +19%) !default;
+$gray-800: adjust-color(#000, $lightness: +26%) !default;
+$gray-400: adjust-color(#000, $lightness: +74%) !default;
+$gray-200: adjust-color(#000, $lightness: +93%) !default;
+$gray-100: adjust-color(#000, $lightness: +96%) !default;
+$gray-50: adjust-color(#000, $lightness: +98%) !default;

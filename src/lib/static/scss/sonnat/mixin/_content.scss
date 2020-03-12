@@ -1,0 +1,21 @@
+@mixin baseText(
+  $size: 1rem,
+  $weight: normal,
+  $height: 2,
+  $color: #{$black-primary}
+) {
+  margin: 0;
+
+  line-height: $height;
+  font-size: $size;
+  font-weight: $weight;
+  font-style: normal;
+  font-stretch: normal;
+  letter-spacing: normal;
+  text-size-adjust: 100%;
+  color: $color;
+
+  &.typography-transition {
+    transition: font-size 200ms ease, line-height 200ms ease;
+  }
+}

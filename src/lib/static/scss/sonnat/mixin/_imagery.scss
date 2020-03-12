@@ -1,0 +1,15 @@
+@mixin icon($pixel) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: #{$pixel / 16}rem;
+  height: #{$pixel / 16}rem;
+  min-width: #{$pixel / 16}rem;
+  min-height: #{$pixel / 16}rem;
+  font-size: #{$pixel / 16}rem;
+
+  & > svg {
+    width: 100%;
+    height: 100%;
+  }
+}
