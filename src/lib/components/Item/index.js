@@ -1,7 +1,7 @@
 import React from "react";
 
 const Item = React.memo(
-  React.forwardRef((children, ref) => (
+  React.forwardRef(({ children }, ref) => (
     <div className="snt-carousel__item" ref={ref}>
       {children}
     </div>

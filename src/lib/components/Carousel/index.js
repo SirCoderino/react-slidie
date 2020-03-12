@@ -80,11 +80,7 @@ const Carousel = ({ children, ...props }) => {
     });
   }, [children, setItemRef]);
 
-  const items = useMemo(() => {
-    const x = renderItems();
-    console.log(x);
-    return x;
-  }, [renderItems]);
+  const items = useMemo(() => renderItems(), [renderItems]);
 
   // attaching events using custom hook (useEventListener)
   // when the EventCurrentTarget or the EventListener changes this hook will
