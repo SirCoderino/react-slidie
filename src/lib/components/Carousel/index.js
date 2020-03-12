@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, {
   useRef,
   useState,
@@ -66,24 +67,24 @@ const Carousel = ({ children, ...props }) => {
   const goTo = useCallback(index => {}, []);
 
   const renderItems = useCallback(() => {
-    React.Children.map(children, (child, index) => {
-      console.log(child);
-      if (child.displayName === "CarouselItem") {
-        const chProps = {
+    return React.Children.map(children, (child, index) => {
+      if (child.type.displayName === "CarouselItem") {
+        const curProps = child.props;
+        const newProps = {
           ref: node => setItemRef(node, index),
-          className: "snt-carousel__item"
+          key: `itemKey${index}`
         };
 
-        return (
-          <div key={`itemKey${index}`} {...chProps}>
-            {child}
-          </div>
-        );
+        return React.cloneElement(child, { ...curProps, ...newProps });
       }
     });
-    return null;
   }, [children, setItemRef]);
-  const items = useMemo(() => renderItems(), [renderItems]);
+
+  const items = useMemo(() => {
+    const x = renderItems();
+    console.log(x);
+    return x;
+  }, [renderItems]);
 
   // attaching events using custom hook (useEventListener)
   // when the EventCurrentTarget or the EventListener changes this hook will
