@@ -1,4 +1,4 @@
-import Carousel, { Item } from "lib/index";
+import Slider, { Slide } from "lib/index";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.scss";
@@ -8,7 +8,7 @@ const items = (() => {
 
   for (let i = 0; i < 10; i++)
     arr.push(
-      <Item key={i}>
+      <Slide key={i}>
         {i % 2 === 0 ? (
           <div className="my-dev-item">
             <h6>Item {i}</h6>
@@ -24,7 +24,7 @@ const items = (() => {
             <h6>Item {i}</h6>
           </div>
         )}
-      </Item>
+      </Slide>
     );
 
   return arr;
@@ -33,7 +33,7 @@ const items = (() => {
 const App = () => {
   return (
     <div style={{ maxWidth: "700px", margin: "50px auto" }}>
-      <Carousel>{items}</Carousel>
+      <Slider>{items}</Slider>
     </div>
   );
 };

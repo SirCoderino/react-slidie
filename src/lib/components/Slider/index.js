@@ -4,8 +4,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
-  useMemo,
-  useContext
+  useMemo
 } from "react";
 import { withResizeDetector } from "react-resize-detector";
 import PropTypes from "prop-types";
@@ -13,11 +12,8 @@ import { isSSR, _ } from "../../helpers";
 import useEventListener from "../../hooks/useEventListener";
 import "../../static/scss/index.scss";
 
-const CarouselContext = React.createContext({});
-
-const Carousel = ({ children, flow, fullViewItems, ...props }) => {
+const Slider = ({ children, flow, fullViewItems, ...props }) => {
   const { width: parentWidth } = props;
-  const ctx = useContext(CarouselContext);
 
   const parentRef = useRef(null),
     frameRef = useRef(null),
@@ -121,10 +117,10 @@ const Carousel = ({ children, flow, fullViewItems, ...props }) => {
 
   const goTo = useCallback(index => {}, []);
 
-  // creates the new items when children (CarouselItem) changes
+  // creates the new items when children (SliderItem) changes
   const createItems = useCallback(() => {
     const createdItems = React.Children.map(children, (child, index) => {
-      if (child.type.displayName === "CarouselItem") {
+      if (child.type.displayName === "Slide") {
         const curProps = child.props;
         const newProps = {
           ref: node => setItemRef(node, index),
@@ -195,52 +191,50 @@ const Carousel = ({ children, flow, fullViewItems, ...props }) => {
   );
 
   return (
-    <CarouselContext.Provider value={{}}>
-      <div
-        ref={parentRef}
-        className={`snt-carousel${flow ? ` snt-carousel--${flow}` : ""}`}
-      >
-        <div className="snt-carousel__wrapper">
-          <div
-            className={`snt-carousel__arrow-container snt-carousel__arrow-container--right${
-              !arrowVisibility.right ? " hide" : ""
-            }`}
-            onClick={flow === "ltr" ? goForward : goBackward}
-          >
-            <span className="snt-carousel__right-arrow sonnat-icon sonnat-icon-arrow-right-o"></span>
-          </div>
-          <div className="snt-carousel__container">
-            <div className="snt-carousel__frame" ref={frameRef}>
-              {renderItems()}
-            </div>
-          </div>
-          <div
-            className={`snt-carousel__arrow-container snt-carousel__arrow-container--left${
-              !arrowVisibility.left ? " hide" : ""
-            }`}
-            onClick={flow === "ltr" ? goBackward : goForward}
-          >
-            <span className="snt-carousel__left-arrow sonnat-icon sonnat-icon-arrow-left-o"></span>
+    <div
+      ref={parentRef}
+      className={`slidie-slider${flow ? ` slidie-slider--${flow}` : ""}`}
+    >
+      <div className="slidie-slider__wrapper">
+        <div
+          className={`slidie-slider__arrow-container slidie-slider__arrow-container--right${
+            !arrowVisibility.right ? " hide" : ""
+          }`}
+          onClick={flow === "ltr" ? goForward : goBackward}
+        >
+          <span className="slidie-slider__right-arrow sonnat-icon sonnat-icon-arrow-right-o"></span>
+        </div>
+        <div className="slidie-slider__container">
+          <div className="slidie-slider__frame" ref={frameRef}>
+            {renderItems()}
           </div>
         </div>
+        <div
+          className={`slidie-slider__arrow-container slidie-slider__arrow-container--left${
+            !arrowVisibility.left ? " hide" : ""
+          }`}
+          onClick={flow === "ltr" ? goBackward : goForward}
+        >
+          <span className="slidie-slider__left-arrow sonnat-icon sonnat-icon-arrow-left-o"></span>
+        </div>
       </div>
-    </CarouselContext.Provider>
+    </div>
   );
 };
 
-Carousel.defaultProps = {
+Slider.defaultProps = {
   flow: "ltr",
   fullViewItems: true
 };
 
-Carousel.propTypes = {
+Slider.propTypes = {
   fullViewItems: PropTypes.bool,
   width: PropTypes.number,
   flow: PropTypes.oneOf(["ltr", "rtl"])
 };
 
 export default React.memo(
-  withResizeDetector(Carousel, {
+  withResizeDetector(Slider, {
     handleWidth: true,
     handleHeight: false,
     refreshMode: "debounce",
