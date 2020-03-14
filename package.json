@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "main": "./src/lib/index.js",
   "license": "MIT",
-  "private": true,
   "description": "React Slider",
+  "files": [
+    "./src/lib"
+  ],
   "scripts": {
     "preversion": "yarn clean && yarn build",
     "start": "webpack-dev-server --config webpack.config.examples.js  --content-base examples/sandbox/src --host 0.0.0.0 --hot --inline --port 3333",
