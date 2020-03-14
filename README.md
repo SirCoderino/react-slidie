@@ -1,1 +1,1 @@
-# Sonnat React Carousel
+# React Slidie
