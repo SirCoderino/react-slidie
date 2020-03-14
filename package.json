@@ -1,10 +1,10 @@
 {
-  "name": "sonnat-react-carousel",
+  "name": "react-slidie",
   "version": "1.0.0",
   "main": "./src/lib/index.js",
   "license": "MIT",
   "private": true,
-  "description": "Elegent React Carousel Using Sonnat Design System",
+  "description": "React Slider",
   "scripts": {
     "preversion": "yarn clean && yarn build",
     "start": "webpack-dev-server --config webpack.config.examples.js  --content-base examples/sandbox/src --host 0.0.0.0 --hot --inline --port 3333",
@@ -17,15 +17,10 @@
   },
   "keywords": [
     "React",
-    "react",
-    "Carousel",
-    "carousel",
     "Slider",
-    "slider",
-    "Sonnat",
-    "sonnat",
-    "React Carousel",
-    "react carousel"
+    "Slidie",
+    "React Slider",
+    "React Slidie"
   ],
   "contributors": [
     {
