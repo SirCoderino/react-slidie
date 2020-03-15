@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, {
   useCallback,
   useMemo,
@@ -11,6 +10,7 @@ import PropTypes from "prop-types";
 import { isSSR, _ } from "../../helpers";
 import useEventListener from "../../hooks/useEventListener";
 import { SliderContext } from "../../context";
+import componentName from "../../components.names.json";
 
 const Slides = React.memo(({ children, className, ...props }) => {
   const slidesRef = useRef([]),
@@ -84,21 +84,6 @@ const Slides = React.memo(({ children, className, ...props }) => {
       setSlidesCount(slidesRef.current.length);
     }
   }, [parentWidth, setBoundry, setSlidesCount]);
-
-  // memoizing partial components
-  const partial = useMemo(() => {
-    let handles = null,
-      indicators = null;
-
-    React.Children.forEach(children, child => {
-      if (child.type.displayName === "Handles")
-        handles = React.cloneElement(child, { ...props });
-      else if (child.type.displayName === "Indicators")
-        indicators = React.cloneElement(child, { ...props });
-    });
-
-    return { handles, indicators };
-  }, [children, props]);
 
   // creates the new slides when children (Slide) changes
   const createSlides = useCallback(() => {
@@ -179,7 +164,6 @@ const Slides = React.memo(({ children, className, ...props }) => {
 
   return (
     <div {...domProps}>
-      {partial.handles}
       <div className="slidie-slider__slides-wrapper">
         <div className="slidie-slider__slides-container">
           <div
@@ -191,12 +175,11 @@ const Slides = React.memo(({ children, className, ...props }) => {
           </div>
         </div>
       </div>
-      {partial.indicators}
     </div>
   );
 });
 
-Slides.displayName = "Slides";
+Slides.displayName = componentName["Slides"];
 
 Slides.propTypes = {
   fullViewSlides: PropTypes.bool,

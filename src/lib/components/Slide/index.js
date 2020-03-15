@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
+import componentName from "../../components.names.json";
 
 const Slide = React.memo(
   React.forwardRef(({ children, className }, ref) => {
@@ -8,7 +9,7 @@ const Slide = React.memo(
       const _props = { ref };
 
       // attaching className
-      let cName = "slidie-slider__slides__slide";
+      let cName = "slidie-slider__slide";
       if (className) cName += className.trim();
       _props.className = cName;
 
@@ -19,7 +20,7 @@ const Slide = React.memo(
   })
 );
 
-Slide.displayName = "Slide";
+Slide.displayName = componentName["Slide"];
 
 Slide.propTypes = {
   className: PropTypes.string

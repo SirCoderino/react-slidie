@@ -2,6 +2,7 @@ import React, { useRef, useMemo, useState } from "react";
 import { withResizeDetector } from "react-resize-detector";
 import PropTypes from "prop-types";
 import SliderProvider from "../SliderProvider";
+import componentName from "../../components.names.json";
 import "./index.scss";
 
 const Slider = React.memo(({ children, className, ...props }) => {
@@ -33,22 +34,18 @@ const Slider = React.memo(({ children, className, ...props }) => {
     return _props;
   }, [className, props.flow]);
 
-  // memoizing partial components
-  const partial = useMemo(() => {
-    let slides = null,
-      indicators = null,
-      handles = null;
+  // memoizing children components
+  const childrens = useMemo(() => {
+    const whitelist = [
+      componentName["Slides"],
+      componentName["Handle"],
+      componentName["Indicators"]
+    ];
 
-    React.Children.forEach(children, child => {
-      if (child.type.displayName === "Slides")
-        slides = React.cloneElement(child, { ...props });
-      else if (child.type.displayName === "Handles")
-        handles = React.cloneElement(child, { ...props });
-      else if (child.type.displayName === "Indicators")
-        indicators = React.cloneElement(child, { ...props });
+    return React.Children.map(children, child => {
+      if (whitelist.includes(child.type.displayName))
+        return React.cloneElement(child, { ...props });
     });
-
-    return { slides, indicators, handles };
   }, [children, props]);
 
   return (
@@ -66,16 +63,12 @@ const Slider = React.memo(({ children, className, ...props }) => {
         setSlidesCount
       }}
     >
-      <div {...parentProps}>
-        {partial.handles}
-        {partial.slides}
-        {partial.indicators}
-      </div>
+      <div {...parentProps}>{childrens}</div>
     </SliderProvider>
   );
 });
 
-Slider.displayName = "Slider";
+Slider.displayName = componentName["Slider"];
 
 Slider.defaultProps = {
   flow: "ltr",

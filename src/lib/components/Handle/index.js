@@ -2,8 +2,9 @@ import React, { useMemo, useCallback, useContext } from "react";
 import PropTypes from "prop-types";
 import { _ } from "../../helpers";
 import { SliderContext } from "../../context";
+import componentName from "../../components.names.json";
 
-const LeftHandle = React.memo(({ children, className, ...props }) => {
+const Handle = React.memo(({ children, role, className, ...props }) => {
   const { width: parentWidth } = props;
 
   // consuming the SliderContext
@@ -14,13 +15,8 @@ const LeftHandle = React.memo(({ children, className, ...props }) => {
     const step = props.fullViewSlides ? parentWidth : 80;
     const sign = props.flow === "rtl" ? 1 : -1;
 
-    if (props.flow === "rtl") {
-      // we should go forward
-      newDx = dx + sign * step;
-    } else if (props.flow === "ltr") {
-      // we should go backward
-      newDx = dx - sign * step;
-    }
+    if (role === "forward") newDx = dx + sign * step;
+    else if (role === "backward") newDx = dx - sign * step;
 
     newDx = _.constrain(
       newDx,
@@ -34,6 +30,7 @@ const LeftHandle = React.memo(({ children, className, ...props }) => {
     boundry,
     dx,
     setDx,
+    role,
     setDragState,
     parentWidth,
     props.flow,
@@ -42,12 +39,11 @@ const LeftHandle = React.memo(({ children, className, ...props }) => {
 
   // constructing the DOM props
   const domProps = useMemo(() => {
-    // memoizing the props
     const _props = {};
 
     // attaching className
-    let cName =
-      "slidie-slider__handles__handle slidie-slider__handles__handle--left";
+    let cName = "slidie-slider__handles__handle";
+    if (role === "forward") cName += `${cName}--${role}`;
     if (className) cName += className.trim();
     _props.className = cName;
 
@@ -55,18 +51,19 @@ const LeftHandle = React.memo(({ children, className, ...props }) => {
     _props.onClick = clickListener;
 
     return _props;
-  }, [className, clickListener]);
+  }, [className, role, clickListener]);
 
   return <div {...domProps}>{children}</div>;
 });
 
-LeftHandle.displayName = "LeftHandle";
+Handle.displayName = componentName["Handle"];
 
-LeftHandle.propTypes = {
+Handle.propTypes = {
   className: PropTypes.string,
   fullViewSlides: PropTypes.bool,
   width: PropTypes.number,
-  flow: PropTypes.oneOf(["ltr", "rtl"])
+  flow: PropTypes.oneOf(["ltr", "rtl"]),
+  role: PropTypes.oneOf(["forward", "backward"]).isRequired
 };
 
-export default LeftHandle;
+export default Handle;

@@ -1,11 +1,4 @@
-import Slider, {
-  Slides,
-  Slide,
-  Indicators,
-  Handles,
-  RightHandle,
-  LeftHandle
-} from "lib/index";
+import Slider, { Slides, Slide, Indicators, Handle } from "lib/index";
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.scss";
@@ -41,14 +34,10 @@ const App = () => {
   return (
     <div style={{ maxWidth: "700px", margin: "50px auto" }}>
       <Slider>
-        <Slides>
-          <Handles>
-            <RightHandle>Right</RightHandle>
-            <LeftHandle>Left</LeftHandle>
-          </Handles>
-          {slides}
-          <Indicators />
-        </Slides>
+        <Handle role="forward">Go Forward</Handle>
+        <Handle role="backward">Go Backward</Handle>
+        <Slides>{slides}</Slides>
+        <Indicators />
       </Slider>
     </div>
   );

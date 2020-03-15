@@ -2,6 +2,7 @@
 import React, { useMemo, useContext } from "react";
 import PropTypes from "prop-types";
 import { SliderContext } from "../../context";
+import componentName from "../../components.names.json";
 
 const Indicators = React.memo(({ className }) => {
   // consuming the SliderContext
@@ -21,7 +22,7 @@ const Indicators = React.memo(({ className }) => {
   return <div {...domProps}>indicators</div>;
 });
 
-Indicators.displayName = "Indicators";
+Indicators.displayName = componentName["Indicators"];
 
 Indicators.propTypes = {
   className: PropTypes.string,
