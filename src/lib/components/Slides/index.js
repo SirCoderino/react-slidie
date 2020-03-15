@@ -12,21 +12,28 @@ import useEventListener from "../../hooks/useEventListener";
 import { SliderContext } from "../../context";
 import componentName from "../../components.names.json";
 
-const Slides = React.memo(({ children, className, ...props }) => {
+const Slides = React.memo(({ children, className, threshold, ...props }) => {
   const slidesRef = useRef([]),
     frameRef = useRef(null);
 
-  const { width: parentWidth } = props;
+  const { width: parentWidth, flow } = props;
 
   // consuming the SliderContext
   const {
+    parentRef,
     dx,
-    setDx,
     boundry,
-    setBoundry,
     dragState,
+    transition,
+    setDx,
+    setBoundry,
     setDragState,
-    setSlidesCount
+    setSlidesCount,
+    toggleTransitionOn,
+    toggleTransitionOff,
+    slideIndex,
+    setSlideIndex,
+    slidesCount
   } = useContext(SliderContext);
 
   const [isMounted, setMounted] = useState(false);
@@ -45,14 +52,16 @@ const Slides = React.memo(({ children, className, ...props }) => {
   const isCalcsAllowed = useMemo(() => isMounted && !isSSR(), [isMounted]);
 
   const frameInlineStyle = useMemo(() => {
-    const translate = `translate3d(${dx}px, 0, 0)`;
+    const { duration, timingFunction } = transition;
 
     return {
-      WebkitTransform: translate,
-      MozTransform: translate,
-      transform: translate
+      WebkitTransition: `-webkit-transform ${duration}ms ${timingFunction}`,
+      OTransition: `transform ${duration}ms ${timingFunction}`,
+      transition: `transform ${duration}ms ${timingFunction}, -webkit-transform ${duration}ms ${timingFunction}`,
+      WebkitTransform: `translate3d(${dx}px, 0, 0)`,
+      transform: `translate3d(${dx}px, 0, 0)`
     };
-  }, [dx]);
+  }, [dx, transition]);
 
   // constructing the DOM props
   const domProps = useMemo(() => {
@@ -117,9 +126,146 @@ const Slides = React.memo(({ children, className, ...props }) => {
     if (isCalcsAllowed && areSlidesRendered) slideCalcs();
   }, [isCalcsAllowed, areSlidesRendered, slideCalcs]);
 
-  const dragStarts = useCallback(e => {}, []);
-  const dragEnds = useCallback(() => {}, []);
-  const dragging = useCallback(e => {}, []);
+  // divides the slide[index] into 4 parts based on the threshold
+  const getRelativeDividesOfThreshold = useCallback(
+    index => {
+      const divides = {
+        head: parentWidth * index,
+        tail: parentWidth * (index + 1)
+      };
+
+      if (index >= 0) {
+        divides["d0"] = parentWidth * (index + threshold);
+        divides["d1"] = parentWidth * (index + (1 - threshold));
+      } else return null;
+
+      return divides;
+    },
+    [threshold, parentWidth]
+  );
+
+  // returns the index of the correct slide based on the x value
+  const getSlideIndexOfDx = useCallback(
+    (x, currentIndex) => {
+      const absX = Math.abs(x);
+      let index = currentIndex;
+
+      const curSlideDivides = getRelativeDividesOfThreshold(currentIndex);
+      const prevSlideDivides = getRelativeDividesOfThreshold(currentIndex - 1);
+
+      if (
+        curSlideDivides.head > absX &&
+        prevSlideDivides &&
+        prevSlideDivides.d1 >= absX
+      )
+        index = _.constrain(index - 1, 0, slidesCount);
+      else if (curSlideDivides.d0 < absX)
+        index = _.constrain(index + 1, 0, slidesCount);
+
+      return index;
+    },
+    [getRelativeDividesOfThreshold, slidesCount]
+  );
+
+  const goToSlide = useCallback(
+    nextIndex => {
+      const currentIndex = slideIndex;
+      const deltaIndexes = Math.abs(nextIndex - currentIndex);
+      var isAdjacent = deltaIndexes === 1;
+
+      if (!isAdjacent) {
+        if (deltaIndexes !== 0) {
+          toggleTransitionOff();
+          setTimeout(toggleTransitionOn, transition.duration);
+        } else toggleTransitionOn();
+      } else toggleTransitionOn();
+
+      const sign = flow === "rtl" ? 1 : -1;
+      const tVal = nextIndex * parentWidth;
+      let newDx = _.constrain(tVal, boundry.minDx, boundry.maxDx);
+
+      newDx = sign * newDx;
+
+      setDx(newDx);
+      setDragState(s => ({ ...s, currentX: newDx, offsetX: newDx }));
+      setSlideIndex(nextIndex);
+    },
+    [
+      setDx,
+      setDragState,
+      toggleTransitionOff,
+      toggleTransitionOn,
+      slideIndex,
+      setSlideIndex,
+      parentWidth,
+      transition,
+      flow,
+      boundry
+    ]
+  );
+
+  const dragStarts = useCallback(
+    e => {
+      let clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+      const parentRect = parentRef.current.getBoundingClientRect();
+
+      clientX = clientX - parentRect.left;
+
+      setDragState(s => ({
+        ...s,
+        active: true,
+        initialX: clientX - s.offsetX
+      }));
+    },
+    [setDragState, parentRef]
+  );
+
+  const dragEnds = useCallback(() => {
+    if (dragState.active) {
+      const currentIndex = slideIndex;
+      const newSlideIndex = getSlideIndexOfDx(dragState.currentX, currentIndex);
+
+      setDragState(s => ({ ...s, active: false, initialX: s.currentX }));
+      goToSlide(newSlideIndex);
+    }
+  }, [dragState, setDragState, getSlideIndexOfDx, goToSlide, slideIndex]);
+
+  const dragging = useCallback(
+    e => {
+      let clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+      var parentRect = parentRef.current.getBoundingClientRect();
+      const sign = flow === "rtl" ? 1 : -1;
+
+      if (dragState.active) {
+        if (e.preventDefault) e.preventDefault();
+        else e.returnValue = false;
+
+        clientX = clientX - parentRect.left;
+        clientX = _.constrain(clientX, 0, parentRect.left + parentRect.width);
+
+        let currentX = clientX - dragState.initialX;
+
+        currentX = _.constrain(
+          currentX,
+          Math.min(boundry.minDx, sign * boundry.maxDx),
+          Math.max(boundry.minDx, sign * boundry.maxDx)
+        );
+
+        toggleTransitionOff();
+        setDx(currentX);
+        setDragState(s => ({ ...s, currentX, offsetX: currentX }));
+      }
+    },
+    [
+      boundry,
+      dragState,
+      setDragState,
+      parentRef,
+      setDx,
+      flow,
+      toggleTransitionOff
+    ]
+  );
 
   // attaching events using custom hook (useEventListener)
   // when the EventCurrentTarget or the EventListener changes this hook will
@@ -182,6 +328,7 @@ const Slides = React.memo(({ children, className, ...props }) => {
 Slides.displayName = componentName["Slides"];
 
 Slides.propTypes = {
+  threshold: PropTypes.number,
   fullViewSlides: PropTypes.bool,
   width: PropTypes.number,
   flow: PropTypes.oneOf(["ltr", "rtl"]),

@@ -5,15 +5,17 @@ import { SliderContext } from "../../context";
 import componentName from "../../components.names.json";
 
 const Handle = React.memo(({ children, role, className, ...props }) => {
-  const { width: parentWidth } = props;
+  const { width: parentWidth, flow, fullViewSlides } = props;
 
   // consuming the SliderContext
-  const { dx, setDx, boundry, setDragState } = useContext(SliderContext);
+  const { dx, setDx, boundry, setDragState, setSlideIndex } = useContext(
+    SliderContext
+  );
 
   const clickListener = useCallback(() => {
     let newDx = 0;
-    const step = props.fullViewSlides ? parentWidth : 80;
-    const sign = props.flow === "rtl" ? 1 : -1;
+    const step = fullViewSlides ? parentWidth : 80;
+    const sign = flow === "rtl" ? 1 : -1;
 
     if (role === "forward") newDx = dx + sign * step;
     else if (role === "backward") newDx = dx - sign * step;
@@ -24,17 +26,24 @@ const Handle = React.memo(({ children, role, className, ...props }) => {
       Math.max(boundry.minDx, sign * boundry.maxDx)
     );
 
-    setDragState(s => ({ ...s, currentX: newDx, offsetX: newDx }));
-    setDx(newDx);
+    // check if the slide's gonna move
+    if (Math.abs(dx - newDx) === parentWidth) {
+      setDragState(s => ({ ...s, currentX: newDx, offsetX: newDx }));
+      setDx(newDx);
+
+      if (role === "forward") setSlideIndex(i => i + 1);
+      else if (role === "backward") setSlideIndex(i => i - 1);
+    }
   }, [
     boundry,
     dx,
     setDx,
     role,
     setDragState,
+    setSlideIndex,
     parentWidth,
-    props.flow,
-    props.fullViewSlides
+    flow,
+    fullViewSlides
   ]);
 
   // constructing the DOM props
@@ -42,9 +51,11 @@ const Handle = React.memo(({ children, role, className, ...props }) => {
     const _props = {};
 
     // attaching className
-    let cName = "slidie-slider__handles__handle";
-    if (role === "forward") cName += ` ${cName}--${role}`;
-    if (className) cName += ` ${className.trim()}`;
+    let cName = "slidie-slider__handle";
+    if (className) {
+      cName += ` ${className.trim()}`;
+      cName += ` ${className}--${role}`;
+    } else cName += ` ${cName}--${role}`;
     _props.className = cName;
 
     // attaching eventListener

@@ -1,5 +1,5 @@
-import Slider, { Slides, Slide, Indicators, Handle } from "lib/index";
-import React from "react";
+import Slider, { Slides, Slide, Indicators, Handle } from "lib";
+import React, { useCallback } from "react";
 import ReactDOM from "react-dom";
 import "./index.scss";
 
@@ -33,7 +33,11 @@ const slides = (() => {
 const App = () => {
   return (
     <div style={{ maxWidth: "700px", margin: "50px auto" }}>
-      <Slider>
+      <Slider
+        onChange={useCallback(index => {
+          console.log("in onChange callback", index);
+        }, [])}
+      >
         <Handle role="forward">Go Forward</Handle>
         <Handle role="backward">Go Backward</Handle>
         <Slides>{slides}</Slides>

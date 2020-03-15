@@ -6,9 +6,13 @@ export const SliderContext = createContext({
   slideIndex: 0,
   dragState: {},
   slidesCount: 0,
+  transition: {},
   setDx: () => {},
   setBoundry: () => {},
   setSlideIndex: () => {},
   setDragState: () => {},
-  setSlidesCount: () => {}
+  setSlidesCount: () => {},
+  toggleTransitionOff: () => {},
+  toggleTransitionOn: () => {},
+  parentRef: { current: undefined }
 });
