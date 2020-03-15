@@ -59,7 +59,7 @@ const Slides = React.memo(({ children, className, ...props }) => {
     const _props = {};
 
     let cName = "slidie-slider__slides";
-    if (className) cName += className.trim();
+    if (className) cName += ` ${className.trim()}`;
     _props.className = cName;
 
     return _props;

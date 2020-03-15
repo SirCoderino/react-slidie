@@ -43,8 +43,8 @@ const Handle = React.memo(({ children, role, className, ...props }) => {
 
     // attaching className
     let cName = "slidie-slider__handles__handle";
-    if (role === "forward") cName += `${cName}--${role}`;
-    if (className) cName += className.trim();
+    if (role === "forward") cName += ` ${cName}--${role}`;
+    if (className) cName += ` ${className.trim()}`;
     _props.className = cName;
 
     // attaching eventListener

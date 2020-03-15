@@ -28,7 +28,7 @@ const Slider = React.memo(({ children, className, ...props }) => {
 
     let cName = "slidie-slider";
     if (props.flow) cName += ` slidie-slider--${props.flow}`;
-    if (className) cName += className.trim();
+    if (className) cName += ` ${className.trim()}`;
     _props.className = cName;
 
     return _props;

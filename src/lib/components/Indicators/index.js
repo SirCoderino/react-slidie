@@ -13,7 +13,7 @@ const Indicators = React.memo(({ className }) => {
     const _props = {};
 
     let cName = "slidie-slider__indicators";
-    if (className) cName += className.trim();
+    if (className) cName += ` ${className.trim()}`;
     _props.className = cName;
 
     return _props;

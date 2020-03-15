@@ -10,7 +10,7 @@ const Slide = React.memo(
 
       // attaching className
       let cName = "slidie-slider__slide";
-      if (className) cName += className.trim();
+      if (className) cName += ` ${className.trim()}`;
       _props.className = cName;
 
       return _props;
