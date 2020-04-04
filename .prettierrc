@@ -5,5 +5,7 @@
   "semi": true,
   "singleQuote": false,
   "tabWidth": 2,
-  "useEditorConfig": true
+  "useEditorConfig": true,
+  "trailingComma": "none",
+  "arrowParens": "avoid"
 }
